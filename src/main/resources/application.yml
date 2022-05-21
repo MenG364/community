@@ -1,4 +1,6 @@
-
+server:
+  servlet:
+    context-path: /community
 
 spring:
   datasource:
@@ -10,6 +12,15 @@ spring:
       max-active: 15
       min-idle: 5
       max-wait: 30000
+  #MailProperties
+  mail:
+    host: smtp.sina.com
+    port: 465
+    username: cq_meng123@sina.com
+    password: 5e2d63ea0c71eb1b
+    protocol: smtps
+    properties:
+      mail.smtp.ssl.enable: true
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
@@ -22,7 +33,12 @@ mybatis:
 #  level:
 #    com.meng.community: debug
 
-server:
-  servlet:
-    context-path: /community
+# community
+community:
+  path:
+    domain: http://localhost:8080
+
+
+
+
 

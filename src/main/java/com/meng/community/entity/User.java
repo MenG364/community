@@ -3,6 +3,7 @@ package com.meng.community.entity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -11,7 +12,8 @@ import java.util.Date;
  */
 @NoArgsConstructor
 @Data
-public class User {
+public class User implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     private int id;
     private String username;

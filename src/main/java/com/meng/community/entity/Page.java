@@ -3,13 +3,16 @@ package com.meng.community.entity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * Description: 封装分页相关的信息
  * Created by MenG on 2022/5/20 21:11
  */
 
 
-public class Page {
+public class Page implements Serializable {
+    private static final long serialVersionUID = 1L;
     //当前的页码
     private int current=1;
 

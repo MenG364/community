@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -13,7 +14,7 @@ import java.util.Date;
 
 @NoArgsConstructor
 @Data
-public class DiscussPost {
+public class DiscussPost implements Serializable {
 
     private int id;
     private int userId;
@@ -24,4 +25,5 @@ public class DiscussPost {
     private Date createTime;
     private int commentCount;
     private double score;
+    private static final long serialVersionUID = 1L;
 }

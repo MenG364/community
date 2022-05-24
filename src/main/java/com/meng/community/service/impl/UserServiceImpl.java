@@ -52,6 +52,11 @@ public class UserServiceImpl implements IUserService, ICommunityConstant {
     }
 
     @Override
+    public User findUserByEmail(String email){
+        return userMapper.selectByEmail(email);
+    }
+
+    @Override
     public Map<String,Object> register(User user){
         HashMap<String, Object> map = new HashMap<>();
 
@@ -141,7 +146,7 @@ public class UserServiceImpl implements IUserService, ICommunityConstant {
         //验证账号
         User user = userMapper.selectByName(username);
         if (user==null){
-            map.put("usernameMsg","该账户已存在");
+            map.put("usernameMsg","该账户不存在");
             return map;
         }
         //验证状态
@@ -153,6 +158,7 @@ public class UserServiceImpl implements IUserService, ICommunityConstant {
         password = CommunityUtil.md5(password + user.getSalt());
         if (!user.getPassword().equals(password)){
             map.put("passwordMsg","密码不正确");
+            return map;
         }
         //生成登录凭证
         LoginTicket loginTicket = new LoginTicket();
@@ -180,24 +186,57 @@ public class UserServiceImpl implements IUserService, ICommunityConstant {
         return userMapper.updateHeader(userid, headerUrl);
     }
 
+    //重置密码
+    @Override
+    public Map<String,Object> resetPassword(String email, String password){
+        Map<String,Object> map=new HashMap<>();
+        if (StringUtils.isBlank(email)) {
+            map.put("emailMsg", "邮箱不能为空!");
+            return map;
+        }
+        if (StringUtils.isBlank(password)) {
+            map.put("PasswordMsg", "新密码不能为空!");
+            return map;
+        }
+        User user = userMapper.selectByEmail(email);
+        if (user==null){
+            map.put("emailMsg", "该邮箱尚未注册!");
+            return map;
+        }
+
+
+        password=CommunityUtil.md5(password + user.getSalt());
+        userMapper.updatePassword(user.getId(),password);
+
+        map.put("user", user);
+        return map;
+    }
+    //
+
     @Override
     public Map<String,Object> updatePassword(int userid,String oldPassword, String newPassword){
         User user = userMapper.selectById(userid);
-        HashMap<String, Object> map = null;
-        if (StringUtils.isBlank(oldPassword)){
-            map = new HashMap<>();
-            map.put("oldPasswordMsg","旧密码不能为空");
+        HashMap<String, Object> map = new HashMap<>();
+        // 空值处理
+        if (StringUtils.isBlank(oldPassword)) {
+            map.put("oldPasswordMsg", "原密码不能为空!");
+            return map;
+        }
+        if (StringUtils.isBlank(newPassword)) {
+            map.put("newPasswordMsg", "新密码不能为空!");
             return map;
         }
 
         oldPassword=CommunityUtil.md5(oldPassword + user.getSalt());
         if (!user.getPassword().equals(oldPassword)){
-            map = new HashMap<>();
-            map.put("oldPasswordMsg","密码不正确");
+            map.put("oldPasswordMsg","原密码输入有误");
             return map;
         }
         newPassword=CommunityUtil.md5(newPassword + user.getSalt());
         userMapper.updatePassword(userid,newPassword);
         return map;
     }
+
+
+
 }

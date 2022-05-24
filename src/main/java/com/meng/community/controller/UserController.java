@@ -121,26 +121,18 @@ public class UserController {
 
     @LoginRequired
     @PutMapping("/password")
-    public String updatePassword(String oldPassword,String newPassword,String confirmPassword,Model model){
-        // 验证空值
-        if (StringUtils.isBlank(newPassword)){
-            model.addAttribute("newPasswordMsg","新密码不能为空");
-            return "/site/setting";
-        }
+    public String updatePassword(String oldPassword,String newPassword,Model model){
 
-        // 验证新密码和确认密码是否相等
-        if (!newPassword.equals(confirmPassword)){
-            model.addAttribute("confirmPassword","密码不一致，请重新输入");
-            return "/site/setting";
-        }
-
-        //
         User user = hostHolder.getUser();
         Map<String, Object> map = userService.updatePassword(user.getId(),oldPassword, newPassword);
-        if (map!=null){
-            model.addAttribute("oldPasswordMsg",map.get("oldPasswordMsg"));
-            return "/site/setting";
+        if (map==null||map.isEmpty()){
+            return "redirect:/logout";
+
         }
-        return "redirect:/logout";
+
+        model.addAttribute("oldPasswordMsg", map.get("oldPasswordMsg"));
+        model.addAttribute("newPasswordMsg", map.get("newPasswordMsg"));
+        return "/site/setting";
+
     }
 }

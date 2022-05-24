@@ -3,17 +3,18 @@ package com.meng.community.controller;
 import com.google.code.kaptcha.Producer;
 import com.meng.community.entity.User;
 import com.meng.community.service.IUserService;
+import com.meng.community.util.CommunityUtil;
 import com.meng.community.util.ICommunityConstant;
+import com.meng.community.util.MailClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
@@ -43,6 +44,12 @@ public class LoginController implements ICommunityConstant {
     @Value("${server.servlet.context-path}")
     private String contextPath;
 
+
+    @Autowired
+    private TemplateEngine templateEngine;
+    @Autowired
+    private MailClient mailClient;
+
     @GetMapping("/register")
     public String getRegisterPage(){
         return "/site/register";
@@ -51,6 +58,11 @@ public class LoginController implements ICommunityConstant {
     @GetMapping("/login")
     public String getLoginPage(){
         return "/site/login";
+    }
+
+    @GetMapping("/forget")
+    public String getForgetPage(){
+        return "/site/forget";
     }
 
     @PostMapping("/register")
@@ -114,6 +126,19 @@ public class LoginController implements ICommunityConstant {
 
     }
 
+    /**
+     * 如果参数是一个实体，那么springboot会将实体放入model中，但如果是普通参数，那么不会放在model中，怎么在前端访问到普通参数呢
+     * 解决：1、人为放入model中
+     *      2、传入的普通参数是放入request中的，返回前端后，本次请求还未结束，我么你可以在request取值${param.username}
+     * @param username
+     * @param password
+     * @param code
+     * @param rememberMe
+     * @param model
+     * @param session
+     * @param response
+     * @return
+     */
     @PostMapping("/login")
     public String login(String username,String password,String code,boolean rememberMe,Model model,HttpSession session
                         ,HttpServletResponse response){
@@ -136,7 +161,7 @@ public class LoginController implements ICommunityConstant {
         }else{
             model.addAttribute("usernameMsg",map.get("usernameMsg"));
             model.addAttribute("passwordMsg",map.get("passwordMsg"));
-            return "site/login";
+            return "/site/login";
         }
 
 
@@ -148,5 +173,47 @@ public class LoginController implements ICommunityConstant {
         return "redirect:/login";
 
     }
+
+    @GetMapping("/forget/code")
+    @ResponseBody
+    public String getCode(String email,HttpSession session){
+        if (StringUtils.isBlank(email)){
+            return CommunityUtil.getJSONString(1, "邮箱不能为空！");
+        }
+
+        Context context=new Context();
+
+        context.setVariable("email",email);
+        String code = CommunityUtil.generateUUID().substring(0, 4);
+        context.setVariable("code",code);
+        String content=templateEngine.process("/mail/forget",context);
+        mailClient.sendMail(email,"找回密码",content);
+
+        session.setAttribute("code",code);
+
+        return CommunityUtil.getJSONString(0);
+    }
+
+
+    @PutMapping("/forget/password")
+    public String resetPassword(Model model,String email,String verifyCode,String password,HttpSession session){
+        String code = (String) session.getAttribute("code");
+        //空值判断
+        if (StringUtils.isBlank(verifyCode)||StringUtils.isBlank(code)||!verifyCode.equalsIgnoreCase(code)){
+            model.addAttribute("codeMsg","验证码错误");
+        }
+
+        Map<String, Object> map = userService.resetPassword(email, password);
+        if (map.containsKey("user")){
+            return "redirect:/login";
+        }
+
+        model.addAttribute("emailMsg",map.get("emailMsg"));
+        model.addAttribute("passwordMsg",map.get("passwordMsg"));
+
+        return "/site/forget";
+
+    }
+
 
 }

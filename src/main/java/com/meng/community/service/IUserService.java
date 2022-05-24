@@ -15,6 +15,8 @@ public interface IUserService {
 
     User findUserById(int id);
 
+    User findUserByEmail(String email);
+
     Map<String,Object> register(User user);
 
     int activation(int userId, String code);
@@ -27,5 +29,8 @@ public interface IUserService {
 
     int updateHeader(int userid, String headerUrl);
 
-    Map<String,Object> updatePassword(int userid,String oldPassword, String newPassword);
+    //重置密码
+    Map<String,Object> resetPassword(String email, String newPassword);
+
+    Map<String,Object> updatePassword(int userid, String oldPassword, String newPassword);
 }

@@ -130,13 +130,13 @@ public class LoginController implements ICommunityConstant {
      * 如果参数是一个实体，那么springboot会将实体放入model中，但如果是普通参数，那么不会放在model中，怎么在前端访问到普通参数呢
      * 解决：1、人为放入model中
      *      2、传入的普通参数是放入request中的，返回前端后，本次请求还未结束，我么你可以在request取值${param.username}
-     * @param username
-     * @param password
-     * @param code
-     * @param rememberMe
-     * @param model
-     * @param session
-     * @param response
+     * @param username 用户名
+     * @param password 密码
+     * @param code 验证码
+     * @param rememberMe 是否记住我
+     * @param model Model
+     * @param session HttpSession
+     * @param response HttpServletResponse
      * @return
      */
     @PostMapping("/login")

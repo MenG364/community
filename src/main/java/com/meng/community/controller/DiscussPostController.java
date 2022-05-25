@@ -1,28 +1,30 @@
 package com.meng.community.controller;
 
+import com.meng.community.entity.Comment;
 import com.meng.community.entity.DiscussPost;
+import com.meng.community.entity.Page;
 import com.meng.community.entity.User;
+import com.meng.community.service.ICommentService;
 import com.meng.community.service.IDiscussPostService;
 import com.meng.community.service.IUserService;
-import com.meng.community.service.impl.DiscussPostServiceImpl;
 import com.meng.community.util.CommunityUtil;
 import com.meng.community.util.HostHolder;
-import lombok.experimental.Delegate;
+import com.meng.community.util.ICommunityConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
+import java.util.*;
 
 /**
- * Description: 帖子相关，登陆之后
+ * Description: 帖子相关
  * Created by MenG on 2022/5/23 20:45
  */
 
 @Controller
 @RequestMapping("/discuss")
-public class DiscussPostController {
+public class DiscussPostController implements ICommunityConstant {
 
     @Autowired
     private IDiscussPostService discussPostService;
@@ -32,6 +34,9 @@ public class DiscussPostController {
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private ICommentService commentService;
 
     @PostMapping
     @ResponseBody
@@ -52,17 +57,79 @@ public class DiscussPostController {
 
     }
 
+    /**
+     *
+     * 查找帖子的回复
+     * 评论的分页信息
+     * @param model
+     * @param id 帖子id
+     * @param page 分页
+     * @return
+     */
     @GetMapping("/detail/{id}")
-    public String getDiscussPost(@PathVariable int id, Model model){
+    public String getDiscussPost(Model model,@PathVariable int id, Page page){
         DiscussPost discussPost = discussPostService.findDiscussPost(id);
         model.addAttribute("post",discussPost);
         //作者
         User user = userService.findUserById(discussPost.getUserId());
         model.addAttribute("user",user);
 
-        //查找帖子的回复
+        page.setLimit(5);
+        page.setPath("/discuss/detail/" + id);
+        page.setRows(discussPost.getCommentCount());
+
+
+        //评论列表
+        List<Comment> commentList = commentService.findCommentByEntity(
+                ENTITY_TYPE_POST, discussPost.getId(), page.getOffset(), page.getLimit());
+        //view object 显示的对象
+        List<Map<String,Object>> commentVoList=new ArrayList<>();
+        //添加数据
+        if (commentVoList!=null){
+            for(Comment comment:commentList){
+                //评论VO
+                HashMap<String, Object> commentVo = new HashMap<>();
+                //评论
+                commentVo.put("comment",comment);
+                //评论的作者
+                commentVo.put("user",userService.findUserById(comment.getUserId()));
+
+                //回复
+                List<Comment> replayList = commentService.findCommentByEntity(
+                        ENTITY_TYPE_COMMENT, comment.getId(), 0, Integer.MAX_VALUE);
+
+                //回复的VO列表
+                List<Map<String ,Object>> replayVoList=new ArrayList<>();
+                if (replayList!=null){
+                    for(Comment replay:replayList){
+                        Map<String ,Object> replayVo=new HashMap<>();
+                        //回复
+                        replayVo.put("replay",replay);
+                        //作者
+                        replayVo.put("user",userService.findUserById(replay.getUserId()));
+                        //回复的目标
+                        User target=replay.getTargetId()==0?null:userService.findUserById(replay.getTargetId());
+                        replayVo.put("target",target);
+
+                        replayVoList.add(replayVo);
+                    }
+                }
+                commentVo.put("replays",replayVoList);
+
+                //回复的数量
+                int replayCount=commentService.findCommentCount(ENTITY_TYPE_COMMENT,comment.getId());
+                commentVo.put("replayCount",replayCount);
+
+                commentVoList.add(commentVo);
+            }
+        }
+
+        model.addAttribute("comments",commentVoList);
 
         return "/site/discuss-detail";
 
     }
+
+
+
 }

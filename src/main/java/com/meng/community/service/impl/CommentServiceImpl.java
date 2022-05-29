@@ -42,6 +42,16 @@ public class CommentServiceImpl implements ICommentService, ICommunityConstant {
         return commentMapper.selectCountByEntity(entityType,entityId);
     }
 
+    @Override
+    public List<Comment> findUserComment(int userId, int offset, int limit){
+        return commentMapper.selectCommentByUser(userId,offset,limit);
+    }
+
+    @Override
+    public int findUserCount(int userId){
+        return commentMapper.selectCountByUser(userId);
+    }
+
     /**
      *  需要事务
      * @param comment

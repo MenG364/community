@@ -1,5 +1,9 @@
 package com.meng.community.service;
 
+import com.meng.community.entity.Message;
+
+import java.util.List;
+
 /**
 * @author lrg
 * @description 针对表【message】的数据库操作Service
@@ -7,4 +11,21 @@ package com.meng.community.service;
 */
 public interface IMessageService {
 
+    Message findLetterById(int id);
+
+    List<Message> findConversations(int userId, int offset, int limit);
+
+    int findConversationCount(int userId);
+
+    List<Message> findLetters(String conversationId, int offset, int limit);
+
+    int findLetterCount(String conversationId);
+
+    int findLetterUnreadCount(int userId, String conversationId);
+
+    int addMessage(Message message);
+
+    int readMessage(List<Integer> ids);
+
+    int deleteMessage(int id);
 }

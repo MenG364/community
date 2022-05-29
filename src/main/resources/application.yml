@@ -21,6 +21,16 @@ spring:
     protocol: smtps
     properties:
       mail.smtp.ssl.enable: true
+  redis:
+    database: 11
+    host: localhost
+    port: 6379
+    lettuce:
+      pool: #连接池配置
+        max-active: 8 #连接池最大连接数
+        max-wait: -1 #连接池最大阻塞等待时间
+        max-idle: 8 #连接池中的最大空闲连接数
+        min-idle: 0 #连接池中的最小空闲连接数
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
@@ -39,6 +49,8 @@ community:
     domain: http://localhost:8080
     upload: F:/work/data/upload
 
+
+# Redis
 
 
 

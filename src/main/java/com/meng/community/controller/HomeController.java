@@ -3,7 +3,9 @@ package com.meng.community.controller;
 import com.meng.community.entity.DiscussPost;
 import com.meng.community.entity.Page;
 import com.meng.community.service.IDiscussPostService;
+import com.meng.community.service.ILikeService;
 import com.meng.community.service.IUserService;
+import com.meng.community.util.ICommunityConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,12 +23,15 @@ import java.util.Map;
  */
 
 @Controller
-@RequestMapping("/index")
-public class HomeController {
+@RequestMapping
+public class HomeController implements ICommunityConstant {
     @Autowired
     private IDiscussPostService discussPostService;
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private ILikeService likeService;
 
 
     /**
@@ -34,7 +39,7 @@ public class HomeController {
      * @param model
      * @return
      */
-    @GetMapping
+    @GetMapping("/index")
     public String getIndexPage(Model model, Page page){
         //方法调用之前，SpringMVC会自动实例化 Model 和 page，并将Page注入Model
         //所以，在Thymeleaf中可以直接访问page对象中的数据
@@ -47,11 +52,21 @@ public class HomeController {
                 HashMap<String, Object> map = new HashMap<>();
                 map.put("post",post);
                 map.put("user",userService.findUserById(post.getUserId()));
+
+                //查询帖子的点赞数量
+                long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST, post.getId());
+                map.put("likeCount",likeCount);
+
                 discussPosts.add(map);
             }
         }
         model.addAttribute("discussPosts",discussPosts);
         return "/index";
+    }
+
+    @GetMapping("/error")
+    public String getErrorpage(){
+        return "/error/500";
     }
 
 

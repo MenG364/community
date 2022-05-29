@@ -17,6 +17,8 @@ public interface IUserService {
 
     User findUserByEmail(String email);
 
+    User findUserByName(String username);
+
     Map<String,Object> register(User user);
 
     int activation(int userId, String code);

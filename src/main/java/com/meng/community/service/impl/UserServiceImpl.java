@@ -57,6 +57,11 @@ public class UserServiceImpl implements IUserService, ICommunityConstant {
     }
 
     @Override
+    public User findUserByName(String username){
+        return userMapper.selectByName(username);
+    }
+
+    @Override
     public Map<String,Object> register(User user){
         HashMap<String, Object> map = new HashMap<>();
 

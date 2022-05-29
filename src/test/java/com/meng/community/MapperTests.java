@@ -2,9 +2,11 @@ package com.meng.community;
 
 import com.meng.community.dao.DiscussPostMapper;
 import com.meng.community.dao.LoginTicketMapper;
+import com.meng.community.dao.MessageMapper;
 import com.meng.community.dao.UserMapper;
 import com.meng.community.entity.DiscussPost;
 import com.meng.community.entity.LoginTicket;
+import com.meng.community.entity.Message;
 import com.meng.community.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,8 @@ import java.util.List;
 @SpringBootTest
 @ContextConfiguration(classes = CommunityApplication.class)
 public class MapperTests {
+    @Autowired
+    private MessageMapper messageMapper;
 
     @Autowired
     private UserMapper userMapper;
@@ -71,6 +75,23 @@ public class MapperTests {
 
         loginTicketMapper.updateStatus("abc",1);
         System.out.println(loginTicketMapper.selectByTicket("abc"));
+    }
+
+    @Test
+    public void testSelectLetters(){
+        List<Message> messages = messageMapper.selectConversations(111, 0, 20);
+        for(Message message:messages){
+            System.out.println(message);
+        }
+        System.out.println(messageMapper.selectConversationCount(111));
+
+        List<Message> messages1 = messageMapper.selectLetters("111_112", 0, 10);
+        for(Message message:messages1){
+            System.out.println(message);
+        }
+
+        System.out.println(messageMapper.selectLetterCount("111_112"));
+        System.out.println(messageMapper.selectLetterUnreadCount(131, "111_131"));
     }
 
 }

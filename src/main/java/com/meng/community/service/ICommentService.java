@@ -11,7 +11,11 @@ import java.util.List;
 public interface ICommentService {
     List<Comment> findCommentByEntity(int entityType, int entityId, int offset, int limit);
 
+    List<Comment> findUserComment(int userId, int offset, int limit);
+
     int findCommentCount(int entityType, int entityId);
+
+    int findUserCount(int userId);
 
     int addComment(Comment comment);
 }

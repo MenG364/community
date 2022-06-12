@@ -28,4 +28,12 @@ public interface IMessageService {
     int readMessage(List<Integer> ids);
 
     int deleteMessage(int id);
+
+    Message findLatestNotice(int userid, String topic);
+
+    int findNoticeCount(int userid, String topic);
+
+    int findNoticeUnreadCount(int userid, String topic);
+
+    List<Message> findNotices(int userId, String topic, int offset, int limit);
 }

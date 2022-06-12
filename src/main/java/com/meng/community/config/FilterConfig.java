@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 
 /**
- * Description: community
+ * Description: 支持put，delete请求
  * Created by MenG on 2022/5/23 10:32
  */
 @Configuration

@@ -80,6 +80,11 @@ public class CommentServiceImpl implements ICommentService, ICommunityConstant {
 
     }
 
+    @Override
+    public Comment findCommentById(int id){
+        return commentMapper.selectCommentById(id);
+    }
+
 }
 
 

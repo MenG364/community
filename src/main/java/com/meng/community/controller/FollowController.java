@@ -1,8 +1,10 @@
 package com.meng.community.controller;
 
 import com.meng.community.annotation.LoginRequired;
+import com.meng.community.entity.Event;
 import com.meng.community.entity.Page;
 import com.meng.community.entity.User;
+import com.meng.community.event.EventProducer;
 import com.meng.community.service.IFollowService;
 import com.meng.community.service.IUserService;
 import com.meng.community.util.CommunityUtil;
@@ -37,6 +39,9 @@ public class FollowController implements ICommunityConstant {
     @Autowired
     private IUserService userService;
 
+    @Autowired
+    private EventProducer eventProducer;
+
     @LoginRequired
     @PostMapping("/follow")
     @ResponseBody
@@ -44,6 +49,15 @@ public class FollowController implements ICommunityConstant {
         User user = hostHolder.getUser();
 
         followService.follow(user.getId(),entityType,entityId);
+
+        // 触发关注事件
+        Event event = new Event()
+                .setTopic(TOPIC_FOLLOW)
+                .setUserId(hostHolder.getUser().getId())
+                .setEntityType(entityType)
+                .setEntityId(entityId)
+                .setEntityUserId(entityId); //目前关注的实体是人
+        eventProducer.fireEvent(event);
 
         return CommunityUtil.getJSONString(0,"已关注！");
 

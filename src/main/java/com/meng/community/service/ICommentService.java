@@ -18,4 +18,6 @@ public interface ICommentService {
     int findUserCount(int userId);
 
     int addComment(Comment comment);
+
+    Comment findCommentById(int id);
 }

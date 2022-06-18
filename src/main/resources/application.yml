@@ -17,7 +17,7 @@ spring:
     host: smtp.sina.com
     port: 465
     username: cq_meng123@sina.com
-    password: 5e2d63ea0c71eb1b
+    password: xxxxx
     protocol: smtps
     properties:
       mail.smtp.ssl.enable: true

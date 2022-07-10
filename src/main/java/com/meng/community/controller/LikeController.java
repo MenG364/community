@@ -8,7 +8,9 @@ import com.meng.community.service.ILikeService;
 import com.meng.community.util.CommunityUtil;
 import com.meng.community.util.HostHolder;
 import com.meng.community.util.ICommunityConstant;
+import com.meng.community.util.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -32,6 +34,9 @@ public class LikeController implements ICommunityConstant {
 
     @Autowired
     private EventProducer eventProducer;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @LoginRequired
     @PostMapping("/like")
@@ -59,6 +64,12 @@ public class LikeController implements ICommunityConstant {
                     .setEntityUserId(entityUserId)
                     .setData("postId",postId);
             eventProducer.fireEvent(event);
+        }
+
+        if (entityType==ENTITY_TYPE_POST){
+            //计算帖子分数
+            String redisKey = RedisKeyUtil.getPostScoreKey();
+            redisTemplate.opsForSet().add(redisKey,postId);
         }
 
         return CommunityUtil.getJSONString(0,null,map);

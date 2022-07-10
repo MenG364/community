@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,13 +41,14 @@ public class HomeController implements ICommunityConstant {
      * @param model
      * @return
      */
-    @GetMapping("/index")
-    public String getIndexPage(Model model, Page page){
+    @GetMapping(value = {"/index/{orderMode}","/index"})
+    public String getIndexPage(Model model, Page page,@PathVariable(value = "orderMode",required = false) Integer orderMode){
         //方法调用之前，SpringMVC会自动实例化 Model 和 page，并将Page注入Model
         //所以，在Thymeleaf中可以直接访问page对象中的数据
         page.setRows(discussPostService.findDiscussPostRows(0));
-        page.setPath("/index");
-        List<DiscussPost> list = discussPostService.findDiscussPosts(0, page.getOffset(), page.getLimit());
+        page.setPath("/index/"+orderMode);
+        if (orderMode==null) orderMode=0;
+        List<DiscussPost> list = discussPostService.findDiscussPosts(0, page.getOffset(), page.getLimit(),orderMode);
         List<Map<String,Object>> discussPosts=new ArrayList<>();
         if (list!=null){
             for(DiscussPost post:list){
@@ -61,12 +64,18 @@ public class HomeController implements ICommunityConstant {
             }
         }
         model.addAttribute("discussPosts",discussPosts);
+        model.addAttribute("orderMode",orderMode);
         return "/index";
     }
 
     @GetMapping("/error")
-    public String getErrorpage(){
+    public String getErrorPage(){
         return "/error/500";
+    }
+
+    @GetMapping("/denied")
+    public String getDeniedPage(){
+        return "/error/404";
     }
 
 

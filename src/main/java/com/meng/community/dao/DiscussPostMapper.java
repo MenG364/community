@@ -18,7 +18,7 @@ public interface DiscussPostMapper {
      * @param userId 用户id
      * @return 帖子数组
      */
-    List<DiscussPost> selectDiscussPosts(int userId,int offset,int limit);
+    List<DiscussPost> selectDiscussPosts(int userId,int offset,int limit,int orderMode);
 
     /**
      *  根据userid查询帖子数量
@@ -50,4 +50,16 @@ public interface DiscussPostMapper {
      * @return
      */
     int updateCommentCount(int id,int commentCount);
+
+    /**
+     * 修改帖子类型
+     * @param id
+     * @param type
+     * @return
+     */
+    int updateType(int id,int type);
+
+    int updateStatus(int id,int status);
+
+    int updateScore(int id,double score);
 }

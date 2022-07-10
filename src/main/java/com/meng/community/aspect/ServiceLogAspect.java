@@ -21,8 +21,8 @@ import java.util.Date;
  */
 
 @Slf4j
-@Component
-@Aspect
+//@Component
+//@Aspect
 public class ServiceLogAspect {
 
     @Pointcut("execution(* com.meng.community.service.*.*(..))")

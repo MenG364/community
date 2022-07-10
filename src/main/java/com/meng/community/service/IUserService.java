@@ -2,7 +2,9 @@ package com.meng.community.service;
 
 import com.meng.community.entity.LoginTicket;
 import com.meng.community.entity.User;
+import org.springframework.security.core.GrantedAuthority;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -35,4 +37,6 @@ public interface IUserService {
     Map<String,Object> resetPassword(String email, String newPassword);
 
     Map<String,Object> updatePassword(int userid, String oldPassword, String newPassword);
+
+    Collection<? extends GrantedAuthority> getAuthorities(int userId);
 }

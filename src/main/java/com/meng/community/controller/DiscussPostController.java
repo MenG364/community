@@ -1,9 +1,7 @@
 package com.meng.community.controller;
 
-import com.meng.community.entity.Comment;
-import com.meng.community.entity.DiscussPost;
-import com.meng.community.entity.Page;
-import com.meng.community.entity.User;
+import com.meng.community.entity.*;
+import com.meng.community.event.EventProducer;
 import com.meng.community.service.ICommentService;
 import com.meng.community.service.IDiscussPostService;
 import com.meng.community.service.ILikeService;
@@ -11,7 +9,9 @@ import com.meng.community.service.IUserService;
 import com.meng.community.util.CommunityUtil;
 import com.meng.community.util.HostHolder;
 import com.meng.community.util.ICommunityConstant;
+import com.meng.community.util.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +42,13 @@ public class DiscussPostController implements ICommunityConstant {
     @Autowired
     private ILikeService likeService;
 
+    @Autowired
+    private EventProducer eventProducer;
+
+
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @PostMapping
     @ResponseBody
     public String addDiscussPost(String title,String content){
@@ -56,6 +63,17 @@ public class DiscussPostController implements ICommunityConstant {
         post.setContent(content);
         post.setCreateTime(new Date());
         discussPostService.addDiscussPost(post);
+        //触发发帖事件
+        Event event = new Event()
+                .setTopic(TOPIC_PUBLISH)
+                .setUserId(user.getId())
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(post.getId());
+        eventProducer.fireEvent(event);
+        //计算帖子分数
+        String redisKey = RedisKeyUtil.getPostScoreKey();
+        redisTemplate.opsForSet().add(redisKey,post.getId());
+
         //报错的情况，将来同一处理
         return CommunityUtil.getJSONString(0,"发布成功");
 
@@ -155,7 +173,58 @@ public class DiscussPostController implements ICommunityConstant {
     }
 
 
+    @PutMapping("/top")
+    @ResponseBody
+    public String setTop(int id){
+        discussPostService.updateType(id,1);
+
+        //触发发帖事件
+        Event event = new Event()
+                .setTopic(TOPIC_PUBLISH)
+                .setUserId(hostHolder.getUser().getId())
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(id);
+        eventProducer.fireEvent(event);
+
+        return CommunityUtil.getJSONString(0);
+    }
 
 
+    //加精
+    @PutMapping("/wonderful")
+    @ResponseBody
+    public String setWonderful(int id){
+        discussPostService.updateStatus(id,1);
+
+        //触发发帖事件
+        Event event = new Event()
+                .setTopic(TOPIC_PUBLISH)
+                .setUserId(hostHolder.getUser().getId())
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(id);
+        eventProducer.fireEvent(event);
+
+        //计算帖子分数
+        String redisKey = RedisKeyUtil.getPostScoreKey();
+        redisTemplate.opsForSet().add(redisKey,id);
+
+        return CommunityUtil.getJSONString(0);
+    }
+
+    @DeleteMapping("/delete")
+    @ResponseBody
+    public String setDelete(int id){
+        discussPostService.updateStatus(id,2);
+
+        //删帖事件
+        Event event = new Event()
+                .setTopic(TOPIC_DELETE)
+                .setUserId(hostHolder.getUser().getId())
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(id);
+        eventProducer.fireEvent(event);
+
+        return CommunityUtil.getJSONString(0);
+    }
 
 }

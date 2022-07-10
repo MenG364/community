@@ -2,7 +2,6 @@ package com.meng.community.util;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.net.http.HttpRequest;
 
 /**
  * Description: community

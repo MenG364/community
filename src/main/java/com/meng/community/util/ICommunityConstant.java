@@ -62,7 +62,34 @@ public interface ICommunityConstant {
     String TOPIC_FOLLOW="FOLLOW";
 
     /**
+     * 事件主题：发帖
+     */
+    String TOPIC_PUBLISH="publish";
+
+    /**
+     * 事件主题：删除
+     */
+    String TOPIC_DELETE="delete";
+
+
+    /**
      * 系统用户ID
      */
     int SYSTEM_USER_ID=1;
+
+    /**
+     * 普通用户
+     */
+    String AUTHORITY_USER="user";
+
+    /**
+     * 管理员
+     */
+    String AUTHORITY_ADMIN="admin";
+
+    /**
+     * 版主
+     */
+    String AUTHORITY_MODERATOR="moderator";
+
 }

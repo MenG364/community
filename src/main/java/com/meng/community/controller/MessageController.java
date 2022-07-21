@@ -76,7 +76,7 @@ public class MessageController implements ICommunityConstant {
 
         int noticeUnreadCount=messageService.findNoticeUnreadCount(user.getId(),null);
         model.addAttribute("noticeUnreadCount",noticeUnreadCount);
-        return "/site/letter";
+        return "site/letter";
     }
 
     @GetMapping("/letter/detail/{conversationId}")
@@ -109,7 +109,7 @@ public class MessageController implements ICommunityConstant {
             messageService.readMessage(ids);
         }
 
-        return "/site/letter-detail";
+        return "site/letter-detail";
     }
 
     /**
@@ -253,7 +253,7 @@ public class MessageController implements ICommunityConstant {
         int noticeUnreadCount=messageService.findNoticeUnreadCount(user.getId(),null);
         model.addAttribute("noticeUnreadCount",noticeUnreadCount);
 
-        return "/site/notice";
+        return "site/notice";
     }
 
     @LoginRequired
@@ -290,7 +290,7 @@ public class MessageController implements ICommunityConstant {
         if (!ids.isEmpty()) {
             messageService.readMessage(ids);
         }
-        return "/site/notice-detail";
+        return "site/notice-detail";
 
     }
 

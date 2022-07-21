@@ -36,6 +36,11 @@ public class HomeController implements ICommunityConstant {
     private ILikeService likeService;
 
 
+    @GetMapping("/")
+    public String root(){
+        return "forward:/index";
+    }
+
     /**
      * 返回首页，支持分页
      * @param model
@@ -65,17 +70,17 @@ public class HomeController implements ICommunityConstant {
         }
         model.addAttribute("discussPosts",discussPosts);
         model.addAttribute("orderMode",orderMode);
-        return "/index";
+        return "index";
     }
 
     @GetMapping("/error")
     public String getErrorPage(){
-        return "/error/500";
+        return "error/500";
     }
 
     @GetMapping("/denied")
     public String getDeniedPage(){
-        return "/error/404";
+        return "error/404";
     }
 
 

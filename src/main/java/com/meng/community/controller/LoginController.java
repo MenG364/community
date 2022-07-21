@@ -59,17 +59,17 @@ public class LoginController implements ICommunityConstant {
 
     @GetMapping("/register")
     public String getRegisterPage(){
-        return "/site/register";
+        return "site/register";
     }
 
     @GetMapping("/login")
     public String getLoginPage(){
-        return "/site/login";
+        return "site/login";
     }
 
     @GetMapping("/forget")
     public String getForgetPage(){
-        return "/site/forget";
+        return "site/forget";
     }
 
     @PostMapping("/register")
@@ -78,12 +78,12 @@ public class LoginController implements ICommunityConstant {
         if (map==null||map.isEmpty()){
             model.addAttribute("msg","注册成功，我们已经向您的邮箱发送了一封激活邮件，请尽快激活");
             model.addAttribute("target","/index");
-            return "/site/operate-result";
+            return "site/operate-result";
         }
         model.addAttribute("usernameMessage",map.get("usernameMessage"));
         model.addAttribute("passwordMessage",map.get("passwordMessage"));
         model.addAttribute("emailNameMessage",map.get("emailNameMessage"));
-        return "/site/register";
+        return "site/register";
     }
 
     /**
@@ -106,7 +106,7 @@ public class LoginController implements ICommunityConstant {
             model.addAttribute("msg","激活失败，您提供的激活码不正确");
             model.addAttribute("target","/index");
         }
-        return "/site/operate-result";
+        return "site/operate-result";
     }
 
     /**
@@ -119,7 +119,7 @@ public class LoginController implements ICommunityConstant {
         BufferedImage image = kaptchaProducer.createImage(text);
 
         //将验证码存入session
-        // session.setAttribute("kaptcha",text);
+//         session.setAttribute("kaptcha",text);
 
         //验证码的归属
         String kaptchaOwner=CommunityUtil.generateUUID();
@@ -168,7 +168,7 @@ public class LoginController implements ICommunityConstant {
 
         if (StringUtils.isBlank(kaptcha)||StringUtils.isBlank(code)||!kaptcha.equalsIgnoreCase(code)){
             model.addAttribute("codeMsg","验证码不正确");
-            return "/site/login";
+            return "site/login";
         }
         //检查账号，密码
         int expiredSecond=rememberMe?REMEMBER_EXPIRED_SECOND:DEFAULT_EXPIRED_SECOND;
@@ -183,7 +183,7 @@ public class LoginController implements ICommunityConstant {
         }else{
             model.addAttribute("usernameMsg",map.get("usernameMsg"));
             model.addAttribute("passwordMsg",map.get("passwordMsg"));
-            return "/site/login";
+            return "site/login";
         }
 
 
@@ -234,7 +234,7 @@ public class LoginController implements ICommunityConstant {
         model.addAttribute("emailMsg",map.get("emailMsg"));
         model.addAttribute("passwordMsg",map.get("passwordMsg"));
 
-        return "/site/forget";
+        return "site/forget";
 
     }
 

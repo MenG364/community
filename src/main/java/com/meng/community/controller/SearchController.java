@@ -54,6 +54,6 @@ public class SearchController implements ICommunityConstant {
         page.setPath("/search?keyword="+keyword);
         long rows = (long) resultMap.get("rows");
         page.setRows(result==null?0: (int) rows);
-        return "/site/search";
+        return "site/search";
     }
 }

@@ -168,7 +168,7 @@ public class DiscussPostController implements ICommunityConstant {
 
         model.addAttribute("comments",commentVoList);
 
-        return "/site/discuss-detail";
+        return "site/discuss-detail";
 
     }
 

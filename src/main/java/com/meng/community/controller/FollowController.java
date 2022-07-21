@@ -97,7 +97,7 @@ public class FollowController implements ICommunityConstant {
 
         model.addAttribute("users",userList);
 
-        return "/site/followee";
+        return "site/followee";
     }
 
     @GetMapping("/followers/{userId}")
@@ -122,7 +122,7 @@ public class FollowController implements ICommunityConstant {
 
         model.addAttribute("users",userList);
 
-        return "/site/follower";
+        return "site/follower";
     }
 
     private boolean hasFollowed(int userId){
